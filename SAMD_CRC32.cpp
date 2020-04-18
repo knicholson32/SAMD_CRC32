@@ -10,6 +10,13 @@
 
   The software CRC32 algorithm was adapted from this source:
   http://home.thep.lu.se/~bjorn/crc/
+  Björn Samuelsson
+
+  CRC32 uses the standard 32-bit CRC parameters:
+    Poly:    0x04C11DB7
+    Init:    0xFFFFFFFF
+    XOR:     0xFFFFFFFF
+    Reflect: Yes
 
   Written by Keenan Nicholson
   MIT license, all text above must be included in any redistribution
@@ -72,10 +79,18 @@ void SAMD_CRC32::force_use_software_crc32(bool val){
                 *addr &= ~0x30000UL;
                 // TODO: Enable NVM Caching on certain errata SAMX5X Chips (see _nvm_cache_errata)
             }
+#ifdef _SAMD51_
+            MCLK->AHBMASK.reg |= MCLK_AHBMASK_DSU;    // Enable AHB DSU Clock Domain
+            MCLK->APBBMASK.reg |= MCLK_APBBMASK_DSU;  // Enable APB DSU Clock Domain
+            if (PAC->STATUSB.reg & 0x02)              // Check if DSU write protection is enabled
+                PAC->WRCTRL.reg = PAC_WRCTRL_KEY_CLR_Val | PAC_WRCTRL_PERID(33);  // Removes DSU write protection (allowing access to internal reg.s)
+                                                                                  // TODO: Check PERID for the DSU (Bridge B, second peripherial; 32+1)
+#else
             PM->AHBMASK.reg |= PM_AHBMASK_DSU;   // Enable APB DSU Clock Domain
             PM->APBBMASK.reg |= PM_APBBMASK_DSU; // Enable AHB DSU Clock Domain
-            if (PAC1->WPCLR.reg & 0x02)          // Check if DSU write protection is enabled
-                PAC1->WPCLR.reg = 0x02;          // b00000000000000000000000000000010 -> Removes DSU write protection (allowing access to internal reg.s)
+            if (PAC1->WPCLR.reg & 0x02) // Check if DSU write protection is enabled
+                PAC1->WPCLR.reg = 0x02; // b00000000000000000000000000000010 -> Removes DSU write protection (allowing access to internal reg.s)
+#endif
             DSU->DATA.reg = 0xFFFFFFFFUL;        // Sets starting CRC data
             DSU->ADDR.reg = DSU_ADDR_ADDR(address >> 2);
             DSU->LENGTH.bit.LENGTH = n_bytes >> 2; // Divide length by four for word alignment

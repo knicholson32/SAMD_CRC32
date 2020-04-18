@@ -10,6 +10,13 @@
 
   The software CRC32 algorithm was adapted from this source:
   http://home.thep.lu.se/~bjorn/crc/
+  Björn Samuelsson
+
+  CRC32 uses the standard 32-bit CRC parameters:
+    Poly:    0x04C11DB7
+    Init:    0xFFFFFFFF
+    XOR:     0xFFFFFFFF
+    Reflect: Yes
 
   Written by Keenan Nicholson
   MIT license, all text above must be included in any redistribution
