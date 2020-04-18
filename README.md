@@ -23,4 +23,4 @@ crc.crc32(&data, sizeof(data), &crc_result);
 The endian type of the device will make a difference for the CRC. In hardware, the CRC is calculated by stepping through memory directly. Note the endianness of the hardware you are using and note that you may have to flip the endianness of your data in order to get it to validate the CRC.
 
 ### Non SAMD Devices
-When loaded to a device that does not have a supported CRC unit, a software CRC will be calculated instead. This is slower than the hardware CRC, but will work on most any devices. The software algorithm was adapted from (this source)[http://home.thep.lu.se/~bjorn/crc/].
+When loaded to a device that does not have a supported CRC unit, a software CRC will be calculated instead. This is slower than the hardware CRC, but will work on most any devices. The software algorithm was adapted from [this source](http://home.thep.lu.se/~bjorn/crc/).
