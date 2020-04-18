@@ -62,7 +62,7 @@ void setup()
     uint32_t crc_result = 0;
 
     // Run a CRC32 with the filler data
-    crc.crc32(&data2, sizeof(data2), &crc_result);
+    crc.crc32(&data, sizeof(data), &crc_result);
 
     // Print the resulting CRC32 value
     Serial.print(crc.check_using_hardware_crc32() ? "Hardware: 0x" : "Software: 0x");
@@ -75,7 +75,7 @@ void setup()
     crc_result = 0;
 
     // Run a CRC32 with the filler data
-    crc.crc32(&data2, sizeof(data2), &crc_result);
+    crc.crc32(&data, sizeof(data), &crc_result);
 
     // Print the resulting CRC32 value
     Serial.print(crc.check_using_hardware_crc32() ? "Hardware: 0x" : "Software: 0x");
@@ -84,5 +84,5 @@ void setup()
 
 void loop()
 {
-    
+
 }
