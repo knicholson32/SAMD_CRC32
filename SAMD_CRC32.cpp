@@ -96,11 +96,13 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
     /*************** SAMD Hardware ***************/
     volatile uint8_t SAMD_CRC32::crc32(const void *data, size_t n_bytes, uint32_t *crc)
     {
+        if(_dsu_in_use){
+        }
         // If the size if the data is not word-aligned (multiple of 32 bits, 4 bytes), the hardware CRC can't process it.
 #ifndef SAMD_CRC32_NO_SOFTWARE_CRC
-        if (_force_software_crc || n_bytes < 4 || (n_bytes & 3) != 0)
+        if (_force_software_crc || _dsu_in_use || n_bytes < 4 || (n_bytes & 3) != 0)
 #else
-        if (n_bytes < 4 || (n_bytes & 3) != 0)
+        if (_dsu_in_use || n_bytes < 4 || (n_bytes & 3) != 0)
 #endif
         {
 #ifndef SAMD_CRC32_NO_SOFTWARE_CRC
@@ -112,13 +114,21 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
             if (_force_software_crc){
                 _hardware_status_code = USER_FORCED_SOFTWARE;
                 return _hardware_status_code;
+            }else if(_dsu_in_use){
+                _hardware_status_code = HARDWARE_CRC32_IN_USE;
+                return HARDWARE_CRC32_IN_USE;
             }else{
                 _hardware_status_code = NOT_WORD_ALIGNED;
                 return _hardware_status_code;
             }
 #else
-            _hardware_status_code = NOT_WORD_ALIGNED;
-            return _hardware_status_code;
+            if(_dsu_in_use){
+                _hardware_status_code = HARDWARE_CRC32_IN_USE;
+                return HARDWARE_CRC32_IN_USE;
+            }else{
+                _hardware_status_code = NOT_WORD_ALIGNED;
+                return _hardware_status_code;
+            }
 #endif
 #else
             return 1; // With no status codes, 1 means that the CRC was not calculated in hardware.
@@ -126,6 +136,7 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
         }
         else
         {
+            _dsu_in_use = true;
 #ifndef SAMD_CRC32_NO_SOFTWARE_CRC
             _using_hardware_crc = true;
 #endif
@@ -137,13 +148,19 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
                 *addr &= ~0x30000UL;
                 // TODO: Enable NVM Caching on certain errata SAMX5X Chips (see _nvm_cache_errata)
             }
-#ifdef _SAMD51_
+            bool AHB_DSU;
+            bool APB_DSU;
+#ifdef _SAMD51_   /* Using SAMD51 */
+            AHB_DSU = MCLK->AHBMASK.reg & MCLK_AHBMASK_DSU;  // Check if the DSU clock is active in the AHBMASK
+            APB_DSU = MCLK->APBBMASK.reg & MCLK_APBBMASK_DSU;  // Check if the DSU clock is active in the APBBMASK
             MCLK->AHBMASK.reg |= MCLK_AHBMASK_DSU;    // Enable AHB DSU Clock Domain
             MCLK->APBBMASK.reg |= MCLK_APBBMASK_DSU;  // Enable APB DSU Clock Domain
             if (PAC->STATUSB.reg & 0x02)              // Check if DSU write protection is enabled
                 PAC->WRCTRL.reg = PAC_WRCTRL_KEY_CLR_Val | PAC_WRCTRL_PERID(33);  // Removes DSU write protection (allowing access to internal reg.s)
                                                                                   // TODO: Check PERID for the DSU (Bridge B, second peripheral; 32+1)
-#else
+#else  /* Using SAMD21 */
+            AHB_DSU = PM->AHBMASK.reg & PM_AHBMASK_DSU;
+            APB_DSU = PM->APBBMASK.reg & PM_APBBMASK_DSU;
             PM->AHBMASK.reg |= PM_AHBMASK_DSU;   // Enable APB DSU Clock Domain
             PM->APBBMASK.reg |= PM_APBBMASK_DSU; // Enable AHB DSU Clock Domain
             if (PAC1->WPCLR.reg & 0x02) // Check if DSU write protection is enabled
@@ -157,6 +174,23 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
             DSU->CTRL.bit.CRC = 1;                 // Start the CRC operation
 
             while (!DSU->STATUSA.bit.DONE) {}
+
+
+            // Restore the DSU clock status to what it was before the CRC
+#ifdef _SAMD51_   /* Using SAMD51 */
+            if(!AHB_DSU)
+                MCLK->AHBMASK.reg &= ~MCLK_AHBMASK_DSU
+            if(!APB_DSU)
+                MCLK->APBBMASK.reg &= ~MCLK_APBBMASK_DSU
+#else  /* Using SAMD21 */
+            if(!AHB_DSU)
+                PM->AHBMASK.reg &= ~PM_AHBMASK_DSU
+            if(!APB_DSU)
+                PM->APBBMASK.reg &= ~PM_APBBMASK_DSU
+#endif
+
+
+            _dsu_in_use = false;
 
             if (DSU->STATUSA.bit.BERR)
             {

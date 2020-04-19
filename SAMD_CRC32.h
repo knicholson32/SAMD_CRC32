@@ -40,7 +40,8 @@
   STATUS(BUS_ERROR)              \
   STATUS(NOT_WORD_ALIGNED)       \
   STATUS(USER_FORCED_SOFTWARE)   \
-  STATUS(HARDWARE_NOT_SUPPORTED)
+  STATUS(HARDWARE_NOT_SUPPORTED) \
+  STATUS(HARDWARE_CRC32_IN_USE)
 
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
@@ -93,6 +94,7 @@ private:
 #ifndef SAMD_CRC32_NO_STATUS
   hardware_crc_status _hardware_status_code;
 #endif
+  static bool _dsu_in_use = false;
 };
 
 #endif

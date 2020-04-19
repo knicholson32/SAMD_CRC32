@@ -37,6 +37,7 @@ Status codes are of type `uint8_t`. Options are as defined in the ENUM `hardware
 * `NOT_WORD_ALIGNED`
 * `USER_FORCED_SOFTWARE`
 * `HARDWARE_NOT_SUPPORTED`
+* `HARDWARE_CRC32_IN_USE`
 
 A status code can be compared to these values in the following way:
 ```c++
