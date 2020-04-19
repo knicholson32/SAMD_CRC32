@@ -1,5 +1,5 @@
-# SAMD-CRC32
-CRC32 Library for SAMD Microcontrollers
+# SAMD_CRC32
+CRC32 Library for SAMD Microcontrollers (Arduino Zero, Adafruit Itsy Bitsy M0, Adafruit Metro M4, etc.)
 
 ## Usage
 
