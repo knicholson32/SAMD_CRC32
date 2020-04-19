@@ -74,13 +74,13 @@ The endian type of the device will make a difference for the CRC. In hardware, t
 The SAMD hardware CRC32 implementation requires data to be in words of 32 bits (4 bytes). For example, calculating a 17 byte CRC32 with hardware would yield an erroneous CRC. In these cases where the data inputted to the CRC object is not 32-bit word aligned, the software CRC32 algorithm will be used instead.
 
 ### Non SAMD Devices
-When loaded to a device that does not have a supported CRC unit, a software CRC will be calculated instead. This is slower than the hardware CRC, but will work on most any devices. The software algorithm was adapted from [this source, Björn Samuelsson](http://home.thep.lu.se/~bjorn/crc/).
+When loaded to a device that does not have a supported CRC unit, a software CRC will be calculated instead. This is slower than the hardware CRC, but will work on most devices. The software algorithm was adapted from [this source (Björn Samuelsson)](http://home.thep.lu.se/~bjorn/crc/).
 
 ## Speed
 The hardware CRC32 implementation is about 10x faster than the included software CRC32 algorithm. 
 
 Speed tests using 96 bytes of empty data (as used in the examples):
 
-Device                            | Hardware CRC32 | Software CRC32
-----------------------------------|----------------|---------------
-ATSAMD21 (Adafruit Itsy Bitsy M0) | 14.24μs/crc    | 161.54μs/crc
+Device                                   | Hardware CRC32 | Software CRC32
+-----------------------------------------|----------------|---------------
+ATSAMD21 (Adafruit Itsy Bitsy M0, 48MHz) | 14.24μs/crc    | 161.54μs/crc

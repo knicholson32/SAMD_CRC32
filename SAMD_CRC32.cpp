@@ -150,7 +150,7 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
             }
             bool AHB_DSU;
             bool APB_DSU;
-#ifdef _SAMD51_   /* Using SAMD51 */
+#ifdef __SAMD51__   /* Using SAMD51 */
             AHB_DSU = MCLK->AHBMASK.reg & MCLK_AHBMASK_DSU;  // Check if the DSU clock is active in the AHBMASK
             APB_DSU = MCLK->APBBMASK.reg & MCLK_APBBMASK_DSU;  // Check if the DSU clock is active in the APBBMASK
             MCLK->AHBMASK.reg |= MCLK_AHBMASK_DSU;    // Enable AHB DSU Clock Domain
@@ -177,7 +177,7 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
 
 
             // Restore the DSU clock status to what it was before the CRC
-#ifdef _SAMD51_   /* Using SAMD51 */
+#ifdef __SAMD51__   /* Using SAMD51 */
             if(!AHB_DSU)
                 MCLK->AHBMASK.reg &= ~MCLK_AHBMASK_DSU
             if(!APB_DSU)
