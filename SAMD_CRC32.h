@@ -77,6 +77,7 @@ class SAMD_CRC32 {
 
   // ---- Helpers ----
   const char *decode_hardware_status_code(uint8_t code);  // Returns the message version of a CRC32 hardware status code
+  static bool _dsu_in_use;
 #endif
   // ---- Primary ----
   volatile uint8_t crc32(const void *data, size_t n_bytes, uint32_t *crc);  // Calculates a CRC32
@@ -94,7 +95,6 @@ private:
 #ifndef SAMD_CRC32_NO_STATUS
   hardware_crc_status _hardware_status_code;
 #endif
-  static bool _dsu_in_use = false;
 };
 
 #endif

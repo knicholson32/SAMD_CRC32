@@ -32,6 +32,7 @@
 #error "Software CRC disabled by precompiler directive, but no hardware CRC support exists for this device. Remove 'SAMD_CRC32_NO_SOFTWARE_CRC' directive."
 #endif
 
+bool SAMD_CRC32::_dsu_in_use = false;
 
 SAMD_CRC32::SAMD_CRC32()
 {
@@ -179,14 +180,14 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
             // Restore the DSU clock status to what it was before the CRC
 #ifdef __SAMD51__   /* Using SAMD51 */
             if(!AHB_DSU)
-                MCLK->AHBMASK.reg &= ~MCLK_AHBMASK_DSU
+                MCLK->AHBMASK.reg &= ~MCLK_AHBMASK_DSU;
             if(!APB_DSU)
-                MCLK->APBBMASK.reg &= ~MCLK_APBBMASK_DSU
+                MCLK->APBBMASK.reg &= ~MCLK_APBBMASK_DSU;
 #else  /* Using SAMD21 */
             if(!AHB_DSU)
-                PM->AHBMASK.reg &= ~PM_AHBMASK_DSU
+                PM->AHBMASK.reg &= ~PM_AHBMASK_DSU;
             if(!APB_DSU)
-                PM->APBBMASK.reg &= ~PM_APBBMASK_DSU
+                PM->APBBMASK.reg &= ~PM_APBBMASK_DSU;
 #endif
 
 
