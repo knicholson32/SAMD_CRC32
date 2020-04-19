@@ -27,7 +27,8 @@
 // Create the CRC object
 SAMD_CRC32 crc = SAMD_CRC32();
 
-// Filler data to test the CRC32 on. Data must be 'word aligned'; that is, divisible by 32 bits.
+// Filler data to test the CRC32 on. Data must be 'word aligned'; that is, divisible by 32 bits. If
+// the data is not 32-bit word aligned, the software CRC32 algorithm will be used.
 // Note that SAMD devices are little endian; raw data such as below will not 'paste' to other
 // CRC32 calculators and produce the same CRC unless care is taken to ensure proper endian.
 const uint32_t data[96] = {0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -46,17 +47,17 @@ const uint32_t data[96] = {0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x000
                            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
                            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
                            0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
-// CRC32 of this data evaluates to 0xD70A721F
+// CRC32 of this data evaluates to 0x88BAD147
 
 void setup()
 {
 
     // Init serial communication
     Serial.begin(9600);
-    while (!Serial)
+    while (!Serial) {}
 
-        // Check whether or not the current device supports hardware CRC32
-        Serial.println(crc.can_use_hardware_crc32() ? "Hardware CRC32 Supported" : "Hardware CRC32 Not Supported");
+    // Check whether or not the current device supports hardware CRC32
+    Serial.println(crc.can_use_hardware_crc32() ? "Hardware CRC32 Supported" : "Hardware CRC32 Not Supported");
 
     // Create a variable for the CRC32 computation to be stored to
     uint32_t crc_result = 0;
@@ -65,7 +66,7 @@ void setup()
     crc.crc32(&data, sizeof(data), &crc_result);
 
     // Print the resulting CRC32 value
-    Serial.print(crc.check_using_hardware_crc32() ? "Hardware: 0x" : "Software: 0x");
+    Serial.print(crc.check_used_hardware_crc32() ? "Hardware: 0x" : "Software: 0x");
     Serial.println(crc_result, HEX);
 
     // Force the use of software CRC32
@@ -78,7 +79,7 @@ void setup()
     crc.crc32(&data, sizeof(data), &crc_result);
 
     // Print the resulting CRC32 value
-    Serial.print(crc.check_using_hardware_crc32() ? "Hardware: 0x" : "Software: 0x");
+    Serial.print(crc.check_used_hardware_crc32() ? "Hardware: 0x" : "Software: 0x");
     Serial.println(crc_result, HEX);
 }
 
