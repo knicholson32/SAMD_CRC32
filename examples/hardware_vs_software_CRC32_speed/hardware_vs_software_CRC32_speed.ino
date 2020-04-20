@@ -56,7 +56,7 @@ void setup()
 
     // Init serial communication
     Serial.begin(9600);
-    while (!Serial) {}
+    while (!Serial);
 
     // Create some variables for timing
     unsigned long t1;

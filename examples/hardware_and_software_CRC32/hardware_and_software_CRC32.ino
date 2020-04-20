@@ -54,7 +54,7 @@ void setup()
 
     // Init serial communication
     Serial.begin(9600);
-    while (!Serial) {}
+    while (!Serial);
 
     // Check whether or not the current device supports hardware CRC32
     Serial.println(crc.can_use_hardware_crc32() ? "Hardware CRC32 Supported" : "Hardware CRC32 Not Supported");

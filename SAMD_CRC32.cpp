@@ -174,7 +174,7 @@ const char *SAMD_CRC32::decode_hardware_status_code(uint8_t code)
             DSU->STATUSA.bit.DONE = 1;             // Clear the done flag
             DSU->CTRL.bit.CRC = 1;                 // Start the CRC operation
 
-            while (!DSU->STATUSA.bit.DONE) {}
+            while (!DSU->STATUSA.bit.DONE);
 
 
             // Restore the DSU clock status to what it was before the CRC

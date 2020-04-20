@@ -38,7 +38,7 @@ void setup()
 
     // Init serial communication
     Serial.begin(9600);
-    while (!Serial) {}
+    while (!Serial);
 
     // Create a variable for the CRC32 computation to be stored to
     uint32_t crc_result = 0;
