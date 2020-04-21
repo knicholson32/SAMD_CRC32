@@ -83,4 +83,7 @@ Speed tests using 96 bytes of empty data (as used in the examples):
 
 Device                                   | Hardware CRC32 | Software CRC32
 -----------------------------------------|----------------|---------------
-ATSAMD21 (Adafruit Itsy Bitsy M0, 48MHz) | 14.24μs/crc    | 161.54μs/crc
+Adafruit Itsy Bitsy M0 (ATSAMD21, 48MHz) | 14.24μs/crc    | 161.54μs/crc
+Teensy 3.6 (MK66FX1M0VMD18, 180MHz)      | --             | 25.92μs/crc
+Arduino Nano (ATMega328P, 16MHz)         | --             | 1164.31us/crc
+Arduino Pro Mini (ATMega328P, 8MHz)      | --             | 2328.64us/crc

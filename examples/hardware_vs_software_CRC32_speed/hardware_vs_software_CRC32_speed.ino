@@ -65,6 +65,8 @@ void setup()
     // Create a variable for the CRC32 computation to be stored to
     uint32_t crc_result = 0;
 
+    Serial.println("Starting Tests:");
+
     // ----- Run the Hardware CRC test
     t1 = micros();
     for(int i = 0; i < TEST_TRIALS; i++){
